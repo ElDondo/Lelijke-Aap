@@ -92,7 +92,7 @@ client.on('interactionCreate', async interaction => {
 				await interaction.reply("Now playing **" + songInfo.videoDetails.title + "**");
 			}
 			else {
-				await interaction.reply("Adding **" + songInfo.videoDetails.title + "** to the queue: ");
+				await interaction.reply("Adding **" + songInfo.videoDetails.title + "** to the queue");
 			}
 		} catch (error) {
 			await interaction.reply("Now playing **" + args + "**");
