@@ -18,7 +18,7 @@ const player = new Player(client, {
 });
 
 client.player = player;
-const { RepeatMode } = require('discord-music-player');
+//const { RepeatMode } = require('discord-music-player');
 
 client.once('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -136,19 +136,6 @@ client.on('interactionCreate', async interaction => {
 });
 
 async function play(args, guild, interaction, voiceChannel){
-	
-	//try {
-	
-
-
-	// } catch (error) {
-	// 	if (!guildQueue) {
-	// 		await interaction.reply("Now playing **" + args + "**");
-	// 	}
-	// 	else {
-	// 		await interaction.reply("Adding **" + args + "** to the queue");
-	// 	}
-	// }
 	let queue = client.player.createQueue(guild.id);
 	await queue.join(voiceChannel);
 
