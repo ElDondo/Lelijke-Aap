@@ -12,7 +12,7 @@ let guildQueue;
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 
-const { Player } = require("discord-music-player");
+const { Player } = require("d-music-player");
 const player = new Player(client, {
 	leaveOnEmpty: false, // These options are optional.
 });
