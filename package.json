@@ -19,7 +19,7 @@
     "@discordjs/voice": "^0.6.0",
     "aws-sdk": "^2.999.0",
     "discord-api-types": "^0.23.0",
-    "discord-music-player": "git+https://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:x-oauth-basic@github.com/ElDondo/discord-music-player.git",
+    "discord-music-player": "git+https://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:x-oauth-basic@github.com/ElDondo/discord-music-player.git",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "ffmpeg": "^0.0.4",
