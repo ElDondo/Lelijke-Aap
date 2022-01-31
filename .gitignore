@@ -1,4 +1,6 @@
+.gitignore
 node_modules
 .env
 config.json
 backup_Queue.js
+"heroku config vars"
