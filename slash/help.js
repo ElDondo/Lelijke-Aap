@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageEmbed } = require("discord.js")
+const { EmbedBuilder } = require("discord.js")
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +8,7 @@ module.exports = {
     run: async ({ client, interaction }) => {
         //const queue = client.player.getQueue(interaction.guildId)
 
-        let reply = new MessageEmbed()
+        let reply = new EmbedBuilder()
             .setTitle('Discord Music Bot Commands')
             .setThumbnail('https://i.imgur.com/mWShjtU.png')
             .addFields(

@@ -5,11 +5,10 @@ module.exports = {
         .setName("stop")
         .setDescription("Stops the bot and clears the queue"),
     run: async ({ client, interaction }) => {
-        const queue = client.player.getQueue(interaction.guildId)
+        const { useQueue } = require("discord-player");
 
-        if (!queue) return await interaction.editReply("There are no songs in the queue")
-
-        queue.destroy()
+        const queue = useQueue(interaction.guild.id);
+        queue.delete();
         await interaction.editReply("Bye!")
     }
 }

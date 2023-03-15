@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageEmbed } = require("discord.js")
-const { QueryTpe, QueryType } = require("discord-player")
+
+const { useMasterPlayer } = require("discord-player");
+
+const player = useMasterPlayer();
+
 
 const playdl = require("play-dl")
 
@@ -12,72 +15,43 @@ playdl.setToken({
     }
 })
 
+player.events.on('playerStart', (queue, track) => {  
+    queue.metadata.channel.send(`Started playing **${track.title}**!`);
+})
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("play")
         .setDescription("Play songs from youtube")
         .addStringOption((option) => option.setName("song").setDescription("the url or search keywords").setRequired(true)),
     run: async ({ client, interaction }) => {
-        if (!interaction.member.voice.channel)
-            return interaction.editReply("You need to be in a Voicechannel to use this command")
+        const channel = interaction.member.voice.channel;
+        if (!channel) return interaction.reply('You are not connected to a voice channel!'); // make sure we have a voice channel
+        const query = interaction.options.getString('song', true); // we need input/query to play
 
-        const queue = await client.player.createQueue(interaction.guild, {
-			leaveOnEnd: false,
-			leaveOnEmpty: true,
-			spotifyBridge: false,
+        // let's defer the interaction as things can take time to process
+        //await interaction.deferReply();
 
-			async onBeforeCreateStream(track, source, _queue) {
-            // only trap youtube source
-				if (source === "youtube") {
-					// track here would be youtube track
-					return (await playdl.stream(track.url, { discordPlayerCompatibility : true })).stream
-					// we must return readable stream or void (returning void means telling discord-player to look for default extractor)
-				}
-			}
-		})
-        if (!queue.connection) await queue.connect(interaction.member.voice.channel)
-
-        let embed = new MessageEmbed()
-
-        let url = interaction.options.getString("song")
-
-        if (url.includes("&list") || url.includes("?list")) {
-            const result = await client.player.search(url, {
-                requestedBy: interaction.user,
-                searchEngine: QueryType.YOUTUBE_PLAYLIST
-            })
-            if (result.tracks.length === 0) {
-                return interaction.editReply("No results")
-            }
-
-            const playlist = result.playlist
-            await queue.addTracks(result.tracks)
-            embed
-                .setDescription(`**${result.tracks.length} songs from [${playlist.title}](${playlist.url})** has been added to the Queue`)
-                .setThumbnail(playlist.thumbnail)
+        try {
+            const { track } = await player.play(channel, query, {
+                nodeOptions: {
+                    metadata: {
+                        channel: interaction.channel,
+                        client: interaction.guild.members.me,
+                        requestedBy: interaction.user
+                    },
+                    leaveOnEmptyCooldown: 300000,
+                    leaveOnEmpty: true,
+                    leaveOnEnd: false,
+                    volume: 10
+                }
+            });
+    
+            return interaction.followUp(`**${track.title}** enqueued!`);
+        } catch (e) {
+            // let's return error if something failed
+            return interaction.followUp(`Something went wrong: ${e}`);
         }
-        else {
-            const result = await client.player.search(url, {
-                requestedBy: interaction.user,
-                searchEngine: QueryType.AUTO
-            })
-            if (result.tracks.length === 0) {
-                return interaction.editReply("No results")
-            }
-
-            const song = result.tracks[0]
-            await queue.addTrack(song)
-            embed
-                .setDescription(`**[${song.title}](${song.url})** has been added to the Queue`)
-                .setThumbnail(song.thumbnail)
-                .setFooter({ text: `Duration: ${song.duration}` })
-        }
-
-        if (!queue.playing) {
-            await queue.play()
-        }
-        await interaction.editReply({
-            embeds: [embed]
-        })
+        
     }
 }

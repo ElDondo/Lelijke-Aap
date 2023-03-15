@@ -20,8 +20,8 @@ module.exports.date = 0
 
 const client = new Discord.Client({
     intents: [
-        "GUILDS",
-        "GUILD_VOICE_STATES"
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildVoiceStates
     ]
 })
 
