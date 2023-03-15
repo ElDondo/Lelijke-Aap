@@ -1,21 +1,23 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageEmbed } = require("discord.js")
+const { EmbedBuilder } = require("discord.js")
+const { useQueue } = require("discord-player");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("skip")
         .setDescription("Skips the bot and clears the queue"),
     run: async ({ client, interaction }) => {
-        const queue = client.player.getQueue(interaction.guildId)
+        const queue = useQueue(interaction.guild.id);
 
         if (!queue) return await interaction.editReply("There are no songs in the queue")
 
-        const currentSong = queue.current
+        const currentSong = queue.currentTrack
+        console.log(currentSong)
 
-        queue.skip()
+        queue.node.skip()
         await interaction.editReply({
             embeds: [
-                new MessageEmbed().setDescription(`${currentSong.title} has been skipped!`).setThumbnail(currentSong.thumbnail)
+                new EmbedBuilder().setDescription(`${currentSong.title} has been skipped!`).setThumbnail(currentSong.thumbnail)
             ]
         })
     }
