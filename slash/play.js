@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-
 const { useMasterPlayer } = require("discord-player");
+const { EmbedBuilder } = require("discord.js")
 
 const player = useMasterPlayer();
 
@@ -46,8 +46,15 @@ module.exports = {
                     volume: 10
                 }
             });
-    
-            return interaction.followUp(`**${track.title}** enqueued!`);
+
+            return interaction.followUp({
+                embeds: [
+                    new EmbedBuilder()
+                    .setDescription(`**[${track.title}](${track.url})** has been added to the Queue`)
+                    .setThumbnail(track.thumbnail)
+                    .setFooter({ text: `Duration: ${track.duration}` })
+                ]
+            });
         } catch (e) {
             // let's return error if something failed
             return interaction.followUp(`Something went wrong: ${e}`);
