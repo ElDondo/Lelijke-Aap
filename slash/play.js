@@ -33,7 +33,6 @@ module.exports = {
         //await interaction.deferReply();
 
         try {
-            console.log(interaction.user)
             const { track } = await player.play(channel, query, {
                 nodeOptions: {
                     metadata: {
