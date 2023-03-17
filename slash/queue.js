@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { EmbedBuilder } = require("discord.js")
-const { useQueue } = require("discord-player");
+const { useQueue } = require("discord-player")
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,12 +12,10 @@ module.exports = {
         const queue = useQueue(interaction.guild.id)
         const tracks = queue.tracks.toArray()
         const size = queue.getSize()
-        console.log(tracks)
 
         if (queue.isEmpty() && !queue.isPlaying()) {
             return await interaction.editReply("There are no songs in the queue.")
         }
-        console.log(size)
         let totalPages = Math.ceil(size / 10)
         const page = (interaction.options.getNumber("page") || 1) - 1
 
@@ -26,12 +24,10 @@ module.exports = {
         }
 
         const queueString = tracks.slice(page * 10, page * 10 + 10).map((song, i) => {
-            console.log(song)
             return `**${page *10 + i +1}.** \`[${song.duration}]\` ${song.title} -- <@${song.requestedBy}>`
         }).join("\n")
 
         const currentSong = queue.currentTrack
-        console.log(totalPages)
         if (totalPages == 0){
             totalPages = 1
         }
