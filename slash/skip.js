@@ -7,7 +7,7 @@ module.exports = {
         .setName("skip")
         .setDescription("Skips the bot and clears the queue"),
     run: async ({ client, interaction }) => {
-        const queue = useQueue(interaction.guild.id);
+        const queue = useQueue(interaction.guild.id)
 
         if (!queue) return await interaction.editReply("There are no songs in the queue")
 
