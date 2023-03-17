@@ -33,12 +33,13 @@ module.exports = {
         //await interaction.deferReply();
 
         try {
+            console.log(interaction.user)
             const { track } = await player.play(channel, query, {
                 nodeOptions: {
                     metadata: {
                         channel: interaction.channel,
                         client: interaction.guild.members.me,
-                        requestedBy: interaction.user
+                        requestedBy: interaction.user.id
                     },
                     leaveOnEmptyCooldown: 300000,
                     leaveOnEmpty: true,
@@ -46,13 +47,14 @@ module.exports = {
                     volume: 10
                 }
             });
+            track.requestedBy = interaction.user.id
 
             return interaction.followUp({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription(`**[${track.title}](${track.url})** has been added to the Queue`)
+                    .setDescription(`**[${track.title}](${track.url})** has been added to the Queue \n\n\n Duration: ${track.duration}`)
                     .setThumbnail(track.thumbnail)
-                    .setFooter({ text: `Duration: ${track.duration}` })
+                    //.setFooter({ text: `Duration: ${track.duration}` })
                 ]
             });
         } catch (e) {
