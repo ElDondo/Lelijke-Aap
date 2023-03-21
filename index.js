@@ -95,10 +95,11 @@ if (LOAD_SLASH) {
         async function handleCommand(){
             if (!interaction.isCommand()) return
 
-            const slashcmd= client.slashcommands.get(interaction.commandName)
+            const slashcmd = client.slashcommands.get(interaction.commandName)
             if (!slashcmd) interaction.reply("Not a valid slash command")
 
             await interaction.deferReply()
+            //await slashcmd.execute({ interaction })
             await slashcmd.run({ client, interaction })
         }
         handleCommand()
