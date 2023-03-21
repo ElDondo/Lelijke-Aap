@@ -5,7 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("shuffle")
         .setDescription("Shuffles the queue"),
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         const queue = useQueue(interaction.guild.id)
         if (queue.isEmpty()) {
             return await interaction.editReply("There are no songs in the queue.")

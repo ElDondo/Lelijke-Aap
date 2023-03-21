@@ -4,7 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("stop")
         .setDescription("Stops the bot and clears the queue"),
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         const { useQueue } = require("discord-player");
 
         const queue = useQueue(interaction.guild.id);

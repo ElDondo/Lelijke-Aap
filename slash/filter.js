@@ -11,7 +11,7 @@ module.exports = {
         .addStringOption((option) => option.setName("filter").setDescription("the filter name").setRequired(true))
         .addStringOption((option) => option.setName("filter2").setDescription("the filter name").setRequired(false))
         .addStringOption((option) => option.setName("filter3").setDescription("the filter name").setRequired(false)),
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         const queue = client.player.getQueue(interaction.guildId)
 
         if (!queue) return await interaction.editReply("There are no songs in the queue")

@@ -6,13 +6,13 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("skip")
         .setDescription("Skips the bot and clears the queue"),
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         const queue = useQueue(interaction.guild.id)
 
         if (!queue) return await interaction.editReply("There are no songs in the queue")
 
         const currentSong = queue.currentTrack
-        console.log(currentSong)
+        //console.log(currentSong)
 
         queue.node.skip()
         await interaction.editReply({

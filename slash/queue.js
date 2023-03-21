@@ -8,7 +8,7 @@ module.exports = {
         .setDescription("Displays the current song queue")
         .addNumberOption((option) => option.setName("page").setDescription("Page number of the queue").setMinValue(1)),
 
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         const queue = useQueue(interaction.guild.id)
         const tracks = queue.tracks.toArray()
         const size = queue.getSize()

@@ -5,7 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("help")
         .setDescription("Help page"),
-    run: async ({ client, interaction }) => {
+    async execute(interaction) {
         //const queue = client.player.getQueue(interaction.guildId)
 
         let reply = new EmbedBuilder()
