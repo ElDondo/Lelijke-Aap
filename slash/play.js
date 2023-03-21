@@ -24,7 +24,7 @@ module.exports = {
         .setName("play")
         .setDescription("Play songs from youtube")
         .addStringOption((option) => option.setName("song").setDescription("the url or search keywords").setRequired(true)),
-    run: async ({ client, interaction }) => {
+    run: async ({ interaction }) => {
         const channel = interaction.member.voice.channel;
         if (!channel) return interaction.reply('You are not connected to a voice channel!'); // make sure we have a voice channel
         const query = interaction.options.getString('song', true); // we need input/query to play
