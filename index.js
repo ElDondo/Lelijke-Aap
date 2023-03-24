@@ -39,36 +39,37 @@ for (const file of commandFiles) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
+	if (interaction.isChatInputCommand()) {
+        const command = interaction.client.commands.get(interaction.commandName)
 
-    // async function handleCommand(){
-    //     if (!interaction.isCommand()) return
+        if (!command) {
+            console.error(`No command matching ${interaction.commandName} was found.`)
+            return
+        }
 
-    //     const slashcmd = client.commands.get(interaction.commandName)
-    //     if (!slashcmd) interaction.reply("Not a valid slash command")
+        try {
+            await interaction.deferReply()
+            await command.execute(interaction)
+        } catch (error) {
+            console.error(error)
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true })
+            } else {
+                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true })
+            }
+        }
+    } else if (interaction.isAutocomplete()) {
+		const command = interaction.client.commands.get(interaction.commandName);
 
-    //     await interaction.deferReply()
-    //     //await slashcmd.execute({ interaction })
-    //     await slashcmd.execute(interaction )
-    // }
-    // handleCommand()
-	if (!interaction.isChatInputCommand()) return
-
-	const command = interaction.client.commands.get(interaction.commandName)
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`)
-		return
-	}
-
-	try {
-        await interaction.deferReply()
-		await command.execute(interaction)
-	} catch (error) {
-		console.error(error)
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true })
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true })
+		if (!command) {
+			console.error(`No command matching ${interaction.commandName} was found.`);
+			return;
+		}
+        
+		try {
+			await command.autocomplete(interaction);
+		} catch (error) {
+			console.error(error);
 		}
 	}
 })
