@@ -16,11 +16,11 @@ Start bot
 
 Load slash commands
 
-> node index.js load
+> node deploy-commands.js
 
 Delete slash commands
 
-> node index.js del
+> node delete-commands.js
 
 ---
 
