@@ -2,25 +2,29 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { EmbedBuilder } = require("discord.js")
 const { useQueue } = require("discord-player")
 
-const index = require('../index')
+//const index = require('../index')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("info")
         .setDescription("Displays info about the currently playing song"),
     async execute(interaction) {
-        const queue = useQueue(interaction.guild.id)
-        if (!queue.isPlaying()) {
-            return await interaction.editReply("There are no songs playing.")
-        }
+        
+        // if (!queue.isPlaying()) {
+        //     return await interaction.editReply("There are no songs playing.")
+        // } else {
+        //     return await interaction.editReply("There are no songs playing.")
+        // }
 
-        let bar
+        await interaction.editReply("info")
+
+        //let bar
         // bar = queue.createProgressBar({
         //     queue: false,
         //     length: 18
         // })
     
-        console.log(queue.currentTrack)
+        //console.log(queue.currentTrack)
 
         // console.log('streamtime' + queue.streamTime)
         // console.log('totalTime' + queue.totalTime)
