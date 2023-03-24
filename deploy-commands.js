@@ -30,12 +30,36 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
 			Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-			{ body: commands },
+			{ body: commands }
 		);
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`)
+		process.exit(0)
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
 		console.error(error)
 	}
 })()
+
+// let commands = []
+
+// const slashFiles = fs.readdirSync("./slash").filter(file => file.endsWith(".js"))
+// for (const file of slashFiles){
+//     const slashcmd = require(`./slash/${file}`)
+//     client.slashcommands.set(slashcmd.data.name, slashcmd)
+//     commands.push(slashcmd.data.toJSON())
+// }
+
+//const rest = new REST({ version: "9" }).setToken(TOKEN)
+//     console.log("Deploying slash commands")
+//     rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
+//     .then(() => {
+//         console.log("Successfully loaded")
+//         process.exit(0)
+//     })
+//     .catch((err) => {
+//         if (err){
+//             console.log(err)
+//             process.exit(1)
+//         }
+//     })
