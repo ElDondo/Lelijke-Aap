@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { useMasterPlayer } = require("discord-player");
+//const { useMasterPlayer } = require("discord-player");
 const { EmbedBuilder } = require("discord.js")
 
-const player = useMasterPlayer();
-
+//const player = useMasterPlayer();
 
 const playdl = require("play-dl")
 
@@ -15,15 +14,15 @@ playdl.setToken({
     }
 })
 
-player.events.on('playerStart', (queue, track) => {  
-    queue.metadata.channel.send(`Started playing **${track.title}**!`);
-})
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("play")
         .setDescription("Play songs from youtube")
-        .addStringOption((option) => option.setName("song").setDescription("the url or search keywords").setRequired(true)),
+        .addStringOption((option) => option 
+        .setName("song")
+        .setDescription("the url or search keywords")
+        .setRequired(true)
+        .setAutocomplete(true)),
     async execute(interaction) {
         const channel = interaction.member.voice.channel;
         if (!channel) return interaction.reply('You are not connected to a voice channel!'); // make sure we have a voice channel
@@ -33,7 +32,8 @@ module.exports = {
         //await interaction.deferReply();
 
         try {
-            const { track } = await player.play(channel, query, {
+            //const { track } = await player.play(channel, query, {
+            const { track } = await interaction.client.player.play(channel, query, {
                 nodeOptions: {
                     metadata: {
                         channel: interaction.channel,
@@ -61,5 +61,19 @@ module.exports = {
             return interaction.followUp(`Something went wrong: ${e}`);
         }
         
+    },
+    async autocomplete(interaction) {
+        //const player = useMasterPlayer();
+        const query = interaction.options.getString('song', true);
+        const results = await interaction.client.player.search(query);
+        //console.log(results)
+     
+        //Returns a list of songs with their title
+        return interaction.respond(
+            results.tracks.slice(0, 10).map((t) => ({
+                name: t.title,
+                value: t.url,
+            }))
+        );
     }
 }

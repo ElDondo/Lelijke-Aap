@@ -172,7 +172,10 @@ client.login(TOKEN)
 	client.player.on("connectionError", (queue, error) => {
         console.log(`Error emitted from the connection: ${error.message}`);
     })
-    client.player.on("trackStart", (queue, track) => {
-        const currentDate = new Date();
-        module.exports.date = currentDate
+    // client.player.on("trackStart", (queue, track) => {
+    //     const currentDate = new Date();
+    //     module.exports.date = currentDate
+    // })
+    client.player.events.on('playerStart', (queue, track) => {  
+        queue.metadata.channel.send(`Started playing **${track.title}**!`);
     })
