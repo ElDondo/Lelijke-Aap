@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 //const { useMasterPlayer } = require("discord-player");
 const { EmbedBuilder } = require("discord.js")
+const ytsr = require('ytsr')
 
 //const player = useMasterPlayer();
 
@@ -19,10 +20,11 @@ module.exports = {
         .setName("play")
         .setDescription("Play songs from youtube")
         .addStringOption((option) => option 
-        .setName("song")
-        .setDescription("the url or search keywords")
-        .setRequired(true)
-        .setAutocomplete(true)),
+            .setName("song")
+            .setDescription("the url or search keywords")
+            .setRequired(true)
+            .setAutocomplete(true)
+        ),
     async execute(interaction) {
         const channel = interaction.member.voice.channel;
         if (!channel) return interaction.reply('You are not connected to a voice channel!'); // make sure we have a voice channel
@@ -63,17 +65,44 @@ module.exports = {
         
     },
     async autocomplete(interaction) {
-        //const player = useMasterPlayer();
-        const query = interaction.options.getString('song', true);
-        const results = await interaction.client.player.search(query);
-        //console.log(results)
+        
+        const query = interaction.options.getString('song', true)
+        let searchResults
+        try {
+            searchResults = await ytsr(query, { pages:1 })
+        } catch (error) {
+            console.log("error")
+        }
+        
+        // const query = interaction.options.getString('song', true);
+        // const results = await interaction.client.player.search(query);
+        // //console.log(results)
      
-        //Returns a list of songs with their title
+        // //Returns a list of songs with their title
+        // return interaction.respond(
+        //     results.tracks.slice(0, 10).map((t) => ({
+        //         name: t.title,
+        //         value: t.url,
+        //     }))
+        // );
+        
+        let songs = []
+        try {
+            searchResults.items.forEach(element => {
+                if (element.type == "video") {
+                    const song = { title: element.title, url: element.url }
+                    songs.push(song)
+                    //console.log(element)
+                }
+            });
+        } catch (error) {
+            console.log("no items found")
+        }
         return interaction.respond(
-            results.tracks.slice(0, 10).map((t) => ({
+            songs.slice(0, 10).map((t) => ({
                 name: t.title,
-                value: t.url,
+                value: t.url
             }))
-        );
+        )
     }
 }
