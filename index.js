@@ -1,10 +1,10 @@
-const { Client, Collection, Events, GatewayIntentBits } = require("discord.js")
+const { Client, Collection, Events, GatewayIntentBits, CommandInteractionOptionResolver, ApplicationCommandOptionType } = require("discord.js")
 const dotenv = require("dotenv")
 //const { REST } = require("@discordjs/rest")
 //const { Routes } = require("discord-api-types/v9")
 const fs = require("node:fs")
 const path = require("node:path")
-const { Player } = require("discord-player")
+const { Player, QueryType } = require("discord-player")
 
 dotenv.config()
 const TOKEN = process.env.TOKEN
@@ -81,101 +81,60 @@ client.once(Events.ClientReady, c => {
 // Log in to Discord with your client's token
 client.login(TOKEN)
 
-// const LOAD_SLASH = process.argv[2] == "load"
-// const LOAD_SLASH_GLOBAL = process.argv[2] == "loadglobal"
-// const DEL_SLASH = process.argv[2] == "del"
-// const DEL_SLASH_GLOBAL = process.argv[2] == "delglobal"
-
-// let commands = []
-
-// const slashFiles = fs.readdirSync("./slash").filter(file => file.endsWith(".js"))
-// for (const file of slashFiles){
-//     const slashcmd = require(`./slash/${file}`)
-//     client.slashcommands.set(slashcmd.data.name, slashcmd)
-//     if (LOAD_SLASH || LOAD_SLASH_GLOBAL) commands.push(slashcmd.data.toJSON())
-// }
-
-// if (LOAD_SLASH) {
-//     const rest = new REST({ version: "9" }).setToken(TOKEN)
-//     console.log("Deploying slash commands")
-//     rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
-//     .then(() => {
-//         console.log("Successfully loaded")
-//         process.exit(0)
-//     })
-//     .catch((err) => {
-//         if (err){
-//             console.log(err)
-//             process.exit(1)
-//         }
-//     })
-// } else if (LOAD_SLASH_GLOBAL) {
-//     const rest = new REST({ version: "9" }).setToken(TOKEN)
-//     console.log("Deploying global slash commands")
-//     rest.put(Routes.applicationCommands(CLIENT_ID), {body: commands})
-//     .then(() => {
-//         console.log("Successfully loaded")
-//         process.exit(0)
-//     })
-//     .catch((err) => {
-//         if (err){
-//             console.log(err)
-//             process.exit(1)
-//         }
-//     })
-// } else if (DEL_SLASH) {
-//     const rest = new REST({ version: '9' }).setToken(TOKEN);
-//     rest.get(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID))
-//         .then(data => {
-//             const promises = [];
-//             for (const command of data) {
-//                 const deleteUrl = `${Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID)}/${command.id}`;
-//                 promises.push(rest.delete(deleteUrl));
-//             }
-//             console.log("Deleted local slash commands!")
-//             return Promise.all(promises);
-//         });
-// } else if (DEL_SLASH_GLOBAL) {
-//     const rest = new REST({ version: '9' }).setToken(TOKEN);
-//     rest.get(Routes.applicationCommands(CLIENT_ID))
-//         .then(data => {
-//             const promises = [];
-//             for (const command of data) {
-//                 const deleteUrl = `${Routes.applicationCommands(CLIENT_ID)}/${command.id}`;
-//                 promises.push(rest.delete(deleteUrl));
-//             }
-//             console.log("Deleted global slash commands!")
-//             return Promise.all(promises);
-//         });
-// } else {
-//     client.on("ready", () => {
-//         console.log(`Logged in as ${client.user.tag}`)
-//     })
-//     client.on("interactionCreate", (interaction) => {
-//         async function handleCommand(){
-//             if (!interaction.isCommand()) return
-
-//             const slashcmd = client.slashcommands.get(interaction.commandName)
-//             if (!slashcmd) interaction.reply("Not a valid slash command")
-
-//             await interaction.deferReply()
-//             //await slashcmd.execute({ interaction })
-//             await slashcmd.run({ client, interaction })
-//         }
-//         handleCommand()
-//     })
-//     client.login(TOKEN)
 	
-	client.player.on("error", (queue, error) => {
-        console.log(`[Error emitted from the queue: ${error.message}`);
-    })
-	client.player.on("connectionError", (queue, error) => {
-        console.log(`Error emitted from the connection: ${error.message}`);
-    })
-    // client.player.on("trackStart", (queue, track) => {
-    //     const currentDate = new Date();
-    //     module.exports.date = currentDate
-    // })
-    client.player.events.on('playerStart', (queue, track) => {  
+client.player.on("error", (queue, error) => {
+    console.log(`[Error emitted from the queue: ${error.message}`);
+})
+client.player.on("connectionError", (queue, error) => {
+    console.log(`Error emitted from the connection: ${error.message}`);
+})
+// client.player.on("trackStart", (queue, track) => {
+//     const currentDate = new Date();
+//     module.exports.date = currentDate
+// })
+client.player.events.on('playerStart', (queue, track) => {  
+    try {
         queue.metadata.channel.send(`Started playing **${track.title}**!`);
+    } catch (error) {
+        //console.log("no title found")
+    }
+    
+})
+
+const sbPlay = async(channel, filePath) => {
+    
+    await client.player.play( channel, filePath, {
+        nodeOptions: {
+            leaveOnEmptyCooldown: 300000,
+            leaveOnEmpty: true,
+            leaveOnEnd: false
+        },
+        searchEngine: QueryType.FILE
     })
+}
+
+const clipPath = "D:/Bureaublad/Lelijke Aap/New/clips/"
+const clipPath2 = "D:/Bureaublad/Lelijke Aap/New/clipsf/"
+
+client.on(Events.InteractionCreate, interaction => {
+    if (!interaction.isButton()) return;
+    const command = interaction.client.commands.get("test")
+    const channelId = interaction.message.channelId
+    const msgId = interaction.message.id
+    const page = interaction.message.components[0].components[0].data.custom_id / 20
+    
+    //console.log(interaction)
+    if (interaction.customId == "999") {
+        command.execute(interaction, "next", client, channelId, msgId, page)
+    } else if (interaction.customId == "998") {
+        command.execute(interaction, "prev", client, channelId, msgId, page)
+    } else {
+        const files = fs.readdirSync(clipPath)
+        const channel = interaction.member.voice.channel
+        const filePath = clipPath + files[interaction.customId]
+        //console.log(interaction.customId)
+        sbPlay(channel, filePath)
+        interaction.deferUpdate()
+    }
+    
+})

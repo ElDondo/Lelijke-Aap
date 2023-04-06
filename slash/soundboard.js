@@ -8,7 +8,7 @@ module.exports = {
         .setDescription("Soundboard")
         .addSubcommand(subcommand =>
             subcommand
-                .setName("1play")
+                .setName("play")
                 .setDescription("Gives the soundboard")
         )
         .addSubcommand(subcommand =>
@@ -21,55 +21,46 @@ module.exports = {
                         .setRequired(true)
                 )
         ),
-    async execute(interaction) {
-        if (interaction.options._subcommand == "1play") {
-            
-            var files = fs.readdirSync(process.cwd() + '/clips/');
-            console.log(files)
-            console.log(interaction.options._subcommand)
+    async execute(interaction, prevNext, client, sbChannelId, sbMsgId, currentPage) {
+        if (prevNext) {
+            const pages = getPages()
 
-            const length = files.length
-            const rowCount = Math.floor(length/5)
-            const mod = length % 5
-            let id = 0
-            //console.log(clips[1])
-            let rows = []
-
-            for (let index = 0; index < rowCount; index++) {
-                let row = new ActionRowBuilder()
-                for (let i = 0; i < 5; i++) {
-                    row.addComponents(
-                        new ButtonBuilder()
-                            .setCustomId(id.toString())
-                            .setLabel(files[id].split('.')[0])
-                            .setStyle(ButtonStyle.Primary),
+            if (prevNext == "next") {
+                if (currentPage + 1 != pages.length) {
+                    client.channels.cache.get(sbChannelId).messages.fetch(sbMsgId)
+                    .then(message => 
+                        message.edit({ components: pages[currentPage + 1] })
                     )
-                    id = id + 1
+                    .catch(console.error)
+                } else {
+                    client.channels.cache.get(sbChannelId).messages.fetch(sbMsgId)
+                    .then(message => 
+                        message.edit({ components: pages[0] })
+                    )
+                    .catch(console.error)
                 }
-                rows.push(row)
-            }
-            if (mod != 0) {
-                for (let index = 0; index < 1; index++) {
-                    let row = new ActionRowBuilder()
-                    for (let i = 0; i < mod; i++) {
-                        row.addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(id.toString())
-                                .setLabel(files[id].split('.')[0])
-                                .setStyle(ButtonStyle.Primary),
-                        )
-                        id = id + 1
-                    }
-                    if (rows.length < 5) {
-                        rows.push(row)
-                    }
-                    
+            } else {
+                if (currentPage != 0) {
+                    client.channels.cache.get(sbChannelId).messages.fetch(sbMsgId)
+                    .then(message => 
+                        message.edit({ components: pages[currentPage - 1] })
+                    )
+                    .catch(console.error)
+                } else {
+                    client.channels.cache.get(sbChannelId).messages.fetch(sbMsgId)
+                    .then(message => 
+                        message.edit({ components: pages[pages.length - 1] })
+                    )
+                    .catch(console.error)
                 }
             }
-            await interaction.editReply({ components: rows })
-        }
+            await interaction.deferUpdate()
+        } else if (interaction.options._subcommand == "play") {
+            const pages = getPages()
+            
+            await interaction.editReply({ components: pages[0] })
 
-        if (interaction.options._subcommand == "add") {
+        } else if (interaction.options._subcommand == "add") {
             const url = interaction.options._hoistedOptions[0].attachment.url
             const name = interaction.options._hoistedOptions[0].attachment.name
             const size = interaction.options._hoistedOptions[0].attachment.size
@@ -81,15 +72,150 @@ module.exports = {
                 await interaction.editReply("File is too large!")
             } else {
                 const request = require('request')
-
                 request
                     .get(url)
                     .on('error', function(err) {
                         console.log(err)
                     })
-                .pipe(fs.createWriteStream(process.cwd() + '/clips/' + name));
+                .pipe(fs.createWriteStream(process.cwd() + '/clipsf/' + name));
                 await interaction.editReply("Adding sound to the soundboard")
             }
         }
     }
 }
+
+function getPages() {
+    const files = fs.readdirSync(process.cwd() + '/clips/');
+    const length = files.length
+
+    let left = length
+    let currentLeftCount = 0
+    let id = 0
+    let grouped = []
+    let pages = []
+    let buttons = new ActionRowBuilder()
+    buttons.addComponents(
+        new ButtonBuilder()
+            .setCustomId("998")
+            .setLabel("previous")
+            .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+            .setCustomId("999")
+            .setLabel("next")
+            .setStyle(ButtonStyle.Secondary),
+    )
+
+    while ( left != 0) {
+        if (left >= 5) {
+            currentLeftCount = 5
+        } else {
+            currentLeftCount = left
+        }
+        let stack = []
+        for (let index = 0; index < currentLeftCount; index++) {
+            stack.push(files[id].toString())
+            id = id + 1
+        }
+        left = left - currentLeftCount
+        grouped.push(stack)
+    }
+    id = 0
+    let page = []
+
+    grouped.forEach(element => {
+        let row = new ActionRowBuilder()
+        for (let index = 0; index < element.length; index++) {
+            row.addComponents(
+                new ButtonBuilder()
+                    .setCustomId(id.toString())
+                    .setLabel(element[index].split('.')[0])
+                    .setStyle(ButtonStyle.Primary),
+            )
+            id = id + 1
+        }
+        page.push(row)
+        if ( page.length == 4) {
+            page.push(buttons)
+            pages.push(page)
+            page = []
+        }
+    })
+    if (page.length != 4) {
+        page.push(buttons)
+        pages.push(page)
+    }
+    return pages
+}
+
+    // async execute(interaction) {
+    //     if (interaction.options._subcommand == "1play") {
+            
+    //         var files = fs.readdirSync(process.cwd() + '/clips/');
+    //         console.log(files)
+    //         console.log(interaction.options._subcommand)
+
+    //         const length = files.length
+    //         const rowCount = Math.floor(length/5)
+    //         const mod = length % 5
+    //         let id = 0
+    //         //console.log(clips[1])
+    //         let rows = []
+
+    //         for (let index = 0; index < rowCount; index++) {
+    //             let row = new ActionRowBuilder()
+    //             for (let i = 0; i < 5; i++) {
+    //                 row.addComponents(
+    //                     new ButtonBuilder()
+    //                         .setCustomId(id.toString())
+    //                         .setLabel(files[id].split('.')[0])
+    //                         .setStyle(ButtonStyle.Primary),
+    //                 )
+    //                 id = id + 1
+    //             }
+    //             rows.push(row)
+    //         }
+    //         if (mod != 0) {
+    //             for (let index = 0; index < 1; index++) {
+    //                 let row = new ActionRowBuilder()
+    //                 for (let i = 0; i < mod; i++) {
+    //                     row.addComponents(
+    //                         new ButtonBuilder()
+    //                             .setCustomId(id.toString())
+    //                             .setLabel(files[id].split('.')[0])
+    //                             .setStyle(ButtonStyle.Primary),
+    //                     )
+    //                     id = id + 1
+    //                 }
+    //                 if (rows.length < 5) {
+    //                     rows.push(row)
+    //                 }
+                    
+    //             }
+    //         }
+    //         await interaction.editReply({ components: rows })
+    //     }
+
+    //     if (interaction.options._subcommand == "add") {
+    //         const url = interaction.options._hoistedOptions[0].attachment.url
+    //         const name = interaction.options._hoistedOptions[0].attachment.name
+    //         const size = interaction.options._hoistedOptions[0].attachment.size
+    //         const type = interaction.options._hoistedOptions[0].attachment.contentType.split('/')[0]
+    //         console.log(interaction.options._hoistedOptions)
+    //         if (type != "audio") {
+    //             await interaction.editReply("This is not a valid file!")
+    //         } else if (size > 2000000) {
+    //             await interaction.editReply("File is too large!")
+    //         } else {
+    //             const request = require('request')
+
+    //             request
+    //                 .get(url)
+    //                 .on('error', function(err) {
+    //                     console.log(err)
+    //                 })
+    //             .pipe(fs.createWriteStream(process.cwd() + '/clips/' + name));
+    //             await interaction.editReply("Adding sound to the soundboard")
+    //         }
+    //     }
+    // }
+//}
