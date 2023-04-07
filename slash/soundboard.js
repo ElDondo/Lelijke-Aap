@@ -20,6 +20,16 @@ module.exports = {
                         .setDescription("Sound to add to the soundboard")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand => 
+            subcommand
+                .setName("remove")
+                .setDescription("Removes the sound by name")
+                .addStringOption(option => 
+                    option.setName("sound")
+                        .setDescription("Remove sound from soundboard")
+                        .setRequired(true)
+                )
         ),
     async execute(interaction, prevNext, client, sbChannelId, sbMsgId, currentPage) {
         if (prevNext) {
@@ -77,9 +87,23 @@ module.exports = {
                     .on('error', function(err) {
                         console.log(err)
                     })
-                .pipe(fs.createWriteStream(process.cwd() + '/clipsf/' + name));
+                .pipe(fs.createWriteStream(process.cwd() + '/clips/' + name));
                 await interaction.editReply("Adding sound to the soundboard")
             }
+        } else if (interaction.options._subcommand == "remove") {
+            const song = interaction.options.getString('sound')
+            const oldPath = process.cwd() + '/clips/' + song + '.mp3'
+            const newPath = process.cwd() + '/deleted/' + song + '.mp3'
+
+            fs.rename(oldPath, newPath, async function (err) {
+                if (err) {
+                    //console.log(err)
+                    await interaction.editReply("This sound does not exist!")
+                } else {
+                    //console.log('Successfully renamed - AKA moved!')
+                    await interaction.editReply("Removed sound from the soundboard")
+                }
+            })
         }
     }
 }
