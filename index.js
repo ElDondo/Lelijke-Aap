@@ -118,23 +118,38 @@ const clipPath2 = "D:/Bureaublad/Lelijke Aap/New/clipsf/"
 
 client.on(Events.InteractionCreate, interaction => {
     if (!interaction.isButton()) return;
-    const command = interaction.client.commands.get("test")
+    const command = interaction.client.commands.get("sb")
     const channelId = interaction.message.channelId
     const msgId = interaction.message.id
     const page = interaction.message.components[0].components[0].data.custom_id / 20
     
-    //console.log(interaction)
-    if (interaction.customId == "999") {
-        command.execute(interaction, "next", client, channelId, msgId, page)
-    } else if (interaction.customId == "998") {
-        command.execute(interaction, "prev", client, channelId, msgId, page)
-    } else {
-        const files = fs.readdirSync(clipPath)
-        const channel = interaction.member.voice.channel
-        const filePath = clipPath + files[interaction.customId]
-        //console.log(interaction.customId)
-        sbPlay(channel, filePath)
-        interaction.deferUpdate()
+    switch(interaction.customId) {
+        case "999": 
+            command.execute(interaction, "next", client, channelId, msgId, page)
+            break
+        case "998":
+            command.execute(interaction, "prev", client, channelId, msgId, page)
+            break
+        default:
+            const files = fs.readdirSync(clipPath)
+            const channel = interaction.member.voice.channel
+            const filePath = clipPath + files[interaction.customId]
+            sbPlay(channel, filePath)
+            interaction.deferUpdate()
     }
+
+    //console.log(interaction)
+    // if (interaction.customId == "999") {
+    //     command.execute(interaction, "next", client, channelId, msgId, page)
+    // } else if (interaction.customId == "998") {
+    //     command.execute(interaction, "prev", client, channelId, msgId, page)
+    // } else {
+    //     const files = fs.readdirSync(clipPath)
+    //     const channel = interaction.member.voice.channel
+    //     const filePath = clipPath + files[interaction.customId]
+    //     //console.log(interaction.customId)
+    //     sbPlay(channel, filePath)
+    //     interaction.deferUpdate()
+    // }
     
 })
