@@ -16,6 +16,11 @@ module.exports = {
         //     return await interaction.editReply("There are no songs playing.")
         // }
 
+        const queue = useQueue(interaction.guild.id)
+        const currentTrack = queue.currentTrack
+
+        console.log(currentTrack)
+
         await interaction.editReply("info")
 
         //let bar
