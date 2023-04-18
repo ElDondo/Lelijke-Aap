@@ -131,11 +131,40 @@ client.on(Events.InteractionCreate, interaction => {
             command.execute(interaction, "prev", client, channelId, msgId, page)
             break
         default:
-            const files = fs.readdirSync(clipPath)
-            const channel = interaction.member.voice.channel
-            const filePath = clipPath + files[interaction.customId]
-            sbPlay(channel, filePath)
             interaction.deferUpdate()
+            const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior } = require('@discordjs/voice')
+            
+            const files = fs.readdirSync(clipPath)
+            const filePath = clipPath + files[interaction.customId]
+            const resource = createAudioResource(filePath)
+            //console.log(interaction.member.voice.channel.id)
+
+            const player = createAudioPlayer({
+                behaviors: {
+                    noSubscriber: NoSubscriberBehavior.Play,
+                    
+                }
+            })
+
+            if (interaction.member.voice.channel.id) {
+                const connection = joinVoiceChannel({
+                    channelId: interaction.member.voice.channel.id,
+                    guildId: interaction.member.voice.channel.guild.id,
+                    adapterCreator: interaction.member.voice.channel.guild.voiceAdapterCreator,
+                });
+                connection.subscribe(player)
+                player.play(resource)
+            }
+            
+
+            
+
+
+            // const files = fs.readdirSync(clipPath)
+            // const channel = interaction.member.voice.channel
+            // const filePath = clipPath + files[interaction.customId]
+            // sbPlay(channel, filePath)
+            // interaction.deferUpdate()
     }
 
     //console.log(interaction)
