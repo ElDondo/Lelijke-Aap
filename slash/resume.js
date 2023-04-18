@@ -12,6 +12,6 @@ module.exports = {
         }
 
         queue.node.setPaused(!queue.node.isPaused())
-        await interaction.editReply("Music has been paused! Use `/pause` to resume the music")
+        await interaction.editReply("Music has been resumed! Use `/pause` to pause the music")
     }
 }
