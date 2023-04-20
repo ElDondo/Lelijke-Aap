@@ -113,8 +113,7 @@ const sbPlay = async(channel, filePath) => {
     })
 }
 
-const clipPath = "D:/Bureaublad/Lelijke Aap/New/clips/"
-const clipPath2 = "D:/Bureaublad/Lelijke Aap/New/clipsf/"
+const clipPath = process.cwd() + '/clips/'
 
 client.on(Events.InteractionCreate, interaction => {
     if (!interaction.isButton()) return;
