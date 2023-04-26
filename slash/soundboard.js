@@ -164,7 +164,7 @@ function getPages() {
             page = []
         }
     })
-    if (page.length != 4) {
+    if (page.length != 4 && page.length != 0) {
         page.push(buttons)
         pages.push(page)
     }
