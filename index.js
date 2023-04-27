@@ -116,45 +116,56 @@ const sbPlay = async(channel, filePath) => {
 const clipPath = process.cwd() + '/clips/'
 
 client.on(Events.InteractionCreate, interaction => {
-    if (!interaction.isButton()) return;
-    const command = interaction.client.commands.get("sb")
-    const channelId = interaction.message.channelId
-    const msgId = interaction.message.id
-    const page = interaction.message.components[0].components[0].data.custom_id / 20
     
-    switch(interaction.customId) {
-        case "999": 
-            command.execute(interaction, "next", client, channelId, msgId, page)
-            break
-        case "998":
-            command.execute(interaction, "prev", client, channelId, msgId, page)
-            break
-        default:
-            interaction.deferUpdate()
-            const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior } = require('@discordjs/voice')
-            
-            const files = fs.readdirSync(clipPath)
-            const filePath = clipPath + files[interaction.customId]
-            const resource = createAudioResource(filePath)
-            //console.log(interaction.member.voice.channel.id)
-
-            const player = createAudioPlayer({
-                behaviors: {
-                    noSubscriber: NoSubscriberBehavior.Play,
-                    
+    if (interaction.isButton()){
+        const command = interaction.client.commands.get("sb")
+        const channelId = interaction.message.channelId
+        const msgId = interaction.message.id
+        const page = interaction.message.components[0].components[0].data.custom_id / 20
+        switch(interaction.customId) {
+            case "999": 
+                command.execute(interaction, "next", client, channelId, msgId, page)
+                break
+            case "998":
+                command.execute(interaction, "prev", client, channelId, msgId, page)
+                break
+            default:
+                interaction.deferUpdate()
+                const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior } = require('@discordjs/voice')
+                
+                const files = fs.readdirSync(clipPath)
+                const filePath = clipPath + files[interaction.customId]
+                const resource = createAudioResource(filePath)
+                //console.log(interaction.member.voice.channel.id)
+    
+                const player = createAudioPlayer({
+                    behaviors: {
+                        noSubscriber: NoSubscriberBehavior.Play,
+                    }
+                })
+    
+                if (interaction.member.voice.channel.id) {
+                    const connection = joinVoiceChannel({
+                        channelId: interaction.member.voice.channel.id,
+                        guildId: interaction.member.voice.channel.guild.id,
+                        adapterCreator: interaction.member.voice.channel.guild.voiceAdapterCreator,
+                    });
+                    connection.subscribe(player)
+                    player.play(resource)
                 }
-            })
-
-            if (interaction.member.voice.channel.id) {
-                const connection = joinVoiceChannel({
-                    channelId: interaction.member.voice.channel.id,
-                    guildId: interaction.member.voice.channel.guild.id,
-                    adapterCreator: interaction.member.voice.channel.guild.voiceAdapterCreator,
-                });
-                connection.subscribe(player)
-                player.play(resource)
-            }
-            
+        } 
+    } else if (interaction.isStringSelectMenu()) {
+        const command = interaction.client.commands.get("test")
+        const channelId = interaction.message.channelId
+        const msgId = interaction.message.id
+        const page = interaction.message.components[0].components[0].data.custom_id / 20
+        console.log(interaction.customId + " " + interaction.values)
+        command.execute(interaction, interaction.values, client, channelId, msgId, page)
+    } else {
+        return
+    }
+    
+    //StringSelectMenuInteraction
 
             
 
@@ -164,7 +175,7 @@ client.on(Events.InteractionCreate, interaction => {
             // const filePath = clipPath + files[interaction.customId]
             // sbPlay(channel, filePath)
             // interaction.deferUpdate()
-    }
+    
 
     //console.log(interaction)
     // if (interaction.customId == "999") {
