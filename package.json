@@ -3,13 +3,14 @@
     "@discord-player/extractor": "^4.1.2",
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.0",
+    "@distube/ytdl-core": "^4.11.9",
     "discord-player": "^6.1.1",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "ffmpeg-static": "^5.1.0",
     "libsodium-wrappers": "^0.7.11",
-    "play-dl": "^1.9.6",
     "request": "^2.88.2",
+    "ytdl-core": "^4.11.4",
     "ytsr": "^3.8.2"
   }
 }
