@@ -35,7 +35,7 @@ module.exports = {
             if (prevNext) {
                 const pages = getPages()
                 const lastRow = pages[prevNext - 1].length - 1
-                console.log(pages[prevNext - 1][lastRow].components[0])
+                //console.log(pages[prevNext - 1][lastRow].components[0])
                 pages[prevNext - 1][lastRow].components[0].setPlaceholder("Page " + prevNext)
                 client.channels.cache.get(sbChannelId).messages.fetch(sbMsgId)
                     .then(message => 
@@ -53,7 +53,7 @@ module.exports = {
                 const name = interaction.options._hoistedOptions[0].attachment.name
                 const size = interaction.options._hoistedOptions[0].attachment.size
                 const type = interaction.options._hoistedOptions[0].attachment.contentType.split('/')[0]
-                console.log(interaction.options._hoistedOptions)
+                //console.log(interaction.options._hoistedOptions)
                 if (type != "audio") {
                     await interaction.editReply("This is not a valid file!")
                 } else if (size > 2000000) {
@@ -90,8 +90,8 @@ module.exports = {
         const files = fs.readdirSync(process.cwd() + '/clips/');
         const length = files.length
         const pageCount = Math.ceil(length / 20)
-        console.log(length)
-        console.log(pageCount)
+        //console.log(length)
+        //console.log(pageCount)
     
         let left = length
         let currentLeftCount = 0
