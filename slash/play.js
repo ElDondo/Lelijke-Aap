@@ -5,15 +5,8 @@ const ytsr = require('ytsr')
 
 //const player = useMasterPlayer();
 
-const playdl = require("play-dl")
 
 const COOKIE = process.env.COOKIE
-
-playdl.setToken({
-    youtube : {
-        cookie : COOKIE
-    }
-})
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -67,6 +60,9 @@ module.exports = {
     async autocomplete(interaction) {
         
         const query = interaction.options.getString('song', true)
+        if (query.length > 0){
+            console.log(query)
+        }
         let searchResults
         try {
             searchResults = await ytsr(query, { pages:1 })

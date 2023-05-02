@@ -19,10 +19,18 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates
     ]
 })
-
+const COOKIE = process.env.COOKIE
 //client.slashcommands = new Discordjs.Collection()
 client.commands = new Collection()
-client.player = new Player(client, {})
+client.player = new Player(client, {
+    ytdlOptions: {
+        requestOptions: {
+            headers: {
+                cookie: COOKIE
+            }
+        }
+    }
+})
 
 const commandsPath = path.join(__dirname, 'slash')
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
