@@ -38,7 +38,7 @@ module.exports = {
                     leaveOnEmptyCooldown: 300000,
                     leaveOnEmpty: true,
                     leaveOnEnd: false,
-                    volume: 10
+                    volume: 50
                 }
             });
             track.requestedBy = interaction.user.id
