@@ -11,6 +11,6 @@
     "libsodium-wrappers": "^0.7.11",
     "request": "^2.88.2",
     "ytdl-core": "^4.11.4",
-    "ytsr": "^3.8.2"
+    "ytsr": "^3.8.4"
   }
 }
