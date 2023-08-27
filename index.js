@@ -109,17 +109,17 @@ client.player.events.on('playerStart', (queue, track) => {
     
 })
 
-const sbPlay = async(channel, filePath) => {
+// const sbPlay = async(channel, filePath) => {
     
-    await client.player.play( channel, filePath, {
-        nodeOptions: {
-            leaveOnEmptyCooldown: 300000,
-            leaveOnEmpty: true,
-            leaveOnEnd: false
-        },
-        searchEngine: QueryType.FILE
-    })
-}
+//     await client.player.play( channel, filePath, {
+//         nodeOptions: {
+//             leaveOnEmptyCooldown: 300000,
+//             leaveOnEmpty: true,
+//             leaveOnEnd: false
+//         },
+//         searchEngine: QueryType.FILE
+//     })
+// }
 
 const clipPath = process.cwd() + '/clips/'
 
@@ -139,35 +139,56 @@ client.on(Events.InteractionCreate, interaction => {
                 break
             default:
                 interaction.deferUpdate()
-                const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior } = require('@discordjs/voice')
+                const { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, AudioPlayerStatus } = require('@discordjs/voice')
                 
                 const files = fs.readdirSync(clipPath)
                 const filePath = clipPath + files[interaction.customId]
                 const resource = createAudioResource(filePath)
                 //console.log(interaction.member.voice.channel.id)
-    
-                const player = createAudioPlayer({
-                    behaviors: {
-                        noSubscriber: NoSubscriberBehavior.Play,
-                    }
-                })
-    
+                let connection
                 if (interaction.member.voice.channel.id) {
-                    const connection = joinVoiceChannel({
+                    connection = joinVoiceChannel({
                         channelId: interaction.member.voice.channel.id,
                         guildId: interaction.member.voice.channel.guild.id,
                         adapterCreator: interaction.member.voice.channel.guild.voiceAdapterCreator,
                     });
-                    connection.subscribe(player)
-                    player.play(resource)
                 }
+
+                let players = []
+                for (let index = 0; index < 5; index++) {
+                    const player = createAudioPlayer({
+                        behaviors: {
+                            noSubscriber: NoSubscriberBehavior.Play,
+                        }
+                    })
+                    players.push(player)
+                }
+                //console.log(players.length)
+
+                connection.subscribe(players[0])
+
+                players[0].play(resource)
+                
+    
+                
+
+                // players[0].on(AudioPlayerStatus.Playing, () => {
+                //     console.log('The audio player has started playing!');
+                //     console.log(players[0].state.status)
+                // });
+                players[0].on(AudioPlayerStatus.Idle, () => {
+                    players[0].stop()
+                    console.log("stopping audio player")
+                    //console.log('The audio player is idle');
+                    //console.log(players[0].state.status)
+                });
         } 
     } else if (interaction.isStringSelectMenu()) {
-        const command = interaction.client.commands.get("test")
+        const command = interaction.client.commands.get("sb")
         const channelId = interaction.message.channelId
         const msgId = interaction.message.id
         const page = interaction.message.components[0].components[0].data.custom_id / 20
-        console.log(interaction.customId + " " + interaction.values)
+        //console.log(interaction.customId + " " + interaction.values)
         command.execute(interaction, interaction.values, client, channelId, msgId, page)
     } else {
         return
@@ -198,5 +219,4 @@ client.on(Events.InteractionCreate, interaction => {
     //     sbPlay(channel, filePath)
     //     interaction.deferUpdate()
     // }
-    
 })
