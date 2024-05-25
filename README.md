@@ -1,10 +1,12 @@
 # Music-New Discord Music Bot
 
 ## First time setup:
-
-1. Rename "template.env" to just ".env" and fill in your TOKEN and CLIENT_ID.
-2. Load slash commands
-3. Start bot
+1. Make sure you have NodeJS installed
+2. Open command line in the bot map
+3. Type npm install
+4. Rename "template.env" to just ".env" and fill in your TOKEN, CLIENT_ID and GUILD_ID.
+5. Load slash commands
+6. Start bot
 
 ---
 
