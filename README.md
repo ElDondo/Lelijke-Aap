@@ -4,9 +4,13 @@
 1. Make sure you have NodeJS installed
 2. Open command line in the bot map
 3. Type npm install
-4. Rename "template.env" to just ".env" and fill in your TOKEN, CLIENT_ID and GUILD_ID.
-5. Load slash commands
-6. Start bot
+4. Create an app here: https://discord.com/developers/docs/quick-start/getting-started
+5. Rename "template.env" to just ".env" and fill in your 
+    * TOKEN from the app you created 
+    * CLIENT_ID application id from the app you created
+    * GUILD_ID id from the server you add the bot to on discord
+6. Load slash commands (node deploy-commands.js)
+7. Start bot (node index.js)
 
 ---
 
