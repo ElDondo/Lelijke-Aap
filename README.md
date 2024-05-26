@@ -1,7 +1,7 @@
 # Music-New Discord Music Bot
 
 ## First time setup:
-1. Make sure you have NodeJS installed
+1. Make sure you have NodeJS installed (v16.20 later versions might not work yet...)
 2. Open command line in the bot map
 3. Type npm install
 4. Create an app here: https://discord.com/developers/docs/quick-start/getting-started
